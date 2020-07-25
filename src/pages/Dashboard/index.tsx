@@ -4,7 +4,8 @@ import api from '../../services/api';
 
 import logoImg from '../../assets/logo.svg';
 
-import {Title, Form, Repositories} from './styles';
+import { Title, Form, Repositories, ErrorMessage } from './styles';
+import Repository from '../Repository';
 
 interface Repository {
   full_name: string;
@@ -18,15 +19,33 @@ interface Repository {
 
 const Dashboard: React.FC = () => {
   const [newRepo, setNewRepo] = useState('');
+  const [inputError, setInputError] = useState('');
   const [repositories, setRepositories] = useState<Repository[]>([]);
 
   async function handleAddRepository(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
 
-    const response = await api.get(`repos/${newRepo}`);
+    if(!newRepo) {
+      return setInputError('Digite o autor/nome do repositório');
+    }
 
-    setRepositories([...repositories, response.data]);
-    setNewRepo('');
+    try {
+
+      const response = await api.get(`repos/${newRepo}`);
+
+      const repository = repositories.find(repo => repo.full_name == newRepo);
+
+      if(!repository) {
+        setRepositories([...repositories, response.data]);
+        setNewRepo('');
+        setInputError('');
+      }else{
+        setInputError('Repositório já adicionado!!');
+      }
+
+    } catch {
+      setInputError('Repositório não encontrado!!');
+    }
   }
 
   return (
@@ -34,14 +53,16 @@ const Dashboard: React.FC = () => {
       <img src={logoImg} alt="Github Explorer"/>
       <Title>Explore repositórios no Github</Title>
 
-      <Form onSubmit={handleAddRepository}>
+      <Form hasError={ !!inputError } onSubmit={handleAddRepository}>
         <input
           value={newRepo}
           onChange={(e) => setNewRepo(e.target.value)}
-          placeholder="Digite o nome do repositório"
-        />
+          placeholder="Digite [Autor]/[Nome do repositório]"
+          />
         <button type="submit">Pesquisar</button>
       </Form>
+
+      { inputError && <ErrorMessage>{inputError}</ErrorMessage> }
 
       <Repositories>
         {
@@ -53,7 +74,7 @@ const Dashboard: React.FC = () => {
                 <p>{repository.description}</p>
               </div>
 
-              <FiChevronRight size={20} />
+              <FiChevronRight size={50} />
             </a>
           ))
         }
