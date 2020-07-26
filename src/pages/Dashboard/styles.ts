@@ -111,5 +111,4 @@ export const Repositories = styled.div`
       color: #CBCBD6;
     }
   }
-
 `;
