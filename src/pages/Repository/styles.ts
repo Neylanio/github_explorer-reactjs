@@ -26,6 +26,7 @@ export const RepositoryInfo = styled.section`
 
   header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
 
     img {
@@ -73,6 +74,34 @@ export const RepositoryInfo = styled.section`
         margin-top: 4px;
         color: #6C6C80;
       }
+    }
+  }
+
+  @media (max-width: 600px) {
+    header {
+      justify-content: center;
+
+      img {
+        width: 150px;
+        height: 150px;
+      }
+
+      div{
+        margin-top: 50px;
+
+        strong {
+          font-size: 26px;
+        }
+
+        p {
+          font-size: 14px;
+          color: #737380;
+          margin-top: 4px;
+        }
+      }
+    }
+    ul {
+      justify-content: center;
     }
   }
 `;
